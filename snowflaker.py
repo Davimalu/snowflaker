@@ -1,5 +1,8 @@
 import sys
 from datetime import datetime
+import matplotlib.pyplot as plt
+
+# TODO: add check for matplotlib module
 
 def main():
     # Check for proper usage
@@ -73,6 +76,7 @@ def main():
             continue
 
         # Get number of forwarded traffic ↓ and ↑
+        # TODO: Add support for log files in MB and GB format
         down_forward = line_words[13]
         up_forward = line_words[16]
         try:
@@ -104,13 +108,56 @@ def main():
     print(f"• Total forwarded traffic ↑: {total_up_forward} KB » {round(total_up_forward / 1000, 2)} MB » {round(total_up_forward / 1000000, 2)} GB")
 
     # Ask user if he wants to continue with generating graphical statistics
-    print("\nWould you like to generate graphical statistical data from your log file? (y/n)")
+    print("\nWould you like to generate more in-depth graphical statistical data from your log file? (y/n)")
     question = input().lower()
 
-    if question == "y":
-        pass
-    else:
+    if not question == "y":
         sys.exit(0)
+
+    daily_users(log)
+    
+    # function to show the plot
+    plt.show()
+
+
+def daily_users(data):
+    # Calculates the user count for each day
+
+    previous_day = 0
+    daily_user_count = dict()
+
+    # Variables for plot generation
+    x = []
+    y = []
+
+    for line in data:
+        # There are multiple entries for each day - if current_day = previous_day we're dealing with another entry from the same day
+        # Else, we're analyzing a new day - thus creating a new dictionary entry
+        current_day = line.date()
+        if current_day == previous_day:
+            daily_user_count[current_day] += int(data[line][0])
+        else:
+            daily_user_count[current_day] = int(data[line][0])
+            x.append(current_day)
+            previous_day = current_day
+
+    # Now a dictionary was created - each key-value pair holds the date and the number of users on that day
+    # We now convert that into a format that can be outputted by matplotlib
+    
+    for line in daily_user_count:
+        y.append(daily_user_count[line])
+
+    # plotting a bar chart
+    plt.bar(x, y, tick_label = x,
+            width = 0.8, color = ['red', 'green'])
+    
+    # naming the x-axis
+    plt.xlabel('Date')
+    # naming the y-axis
+    plt.ylabel('Number of users')
+    # plot title
+    plt.title('Daily connections')
+
 
 if __name__ == "__main__":
     main()
