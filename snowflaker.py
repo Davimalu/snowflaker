@@ -115,9 +115,6 @@ def main():
         sys.exit(0)
 
     daily_users(log)
-    
-    # function to show the plot
-    plt.show()
 
 
 def daily_users(data):
@@ -157,6 +154,26 @@ def daily_users(data):
     plt.ylabel('Number of users')
     # plot title
     plt.title('Daily connections')
+
+    # Rotate text to avoid overlapping
+    plt.xticks(
+        rotation=45, 
+        horizontalalignment='right',
+        fontweight='light',
+    )
+
+    # function to save the plot
+    plt.savefig('daily_connections.png', bbox_inches='tight')
+
+
+def daily_downloads(data):
+    # Same as daily_users but for downloaded traffic relayed
+    pass
+
+
+def daily_uploads(data):
+    # Same as daily_users but for uploaded traffic relayed
+    pass
 
 
 if __name__ == "__main__":
